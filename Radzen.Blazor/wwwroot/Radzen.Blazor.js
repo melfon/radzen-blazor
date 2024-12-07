@@ -83,7 +83,8 @@ window.Radzen = {
   },
   addContextMenu: function (id, ref) {
      var el = document.getElementById(id);
-     if (el) {
+      if (el) {
+        el.style['user-select'] = 'none';
         var handler = function (e) {
             e.stopPropagation();
             e.preventDefault();
@@ -103,7 +104,47 @@ window.Radzen = {
             return false;
         };
         Radzen[id + 'contextmenu'] = handler;
-        el.addEventListener('contextmenu', handler, false);
+         el.addEventListener('contextmenu', handler, false);
+
+
+         // Fix for touch devices
+         var timer;
+         var taphold;
+         const startTouch = function (e) {
+             if (e.touches.length !== 1) {
+                 return;
+             }
+
+             e.preventDefault();
+             e.stopPropagation();
+             taphold = false;
+             timer = setTimeout(function () {
+                 taphold = true;
+                 ref.invokeMethodAsync('RadzenComponent.RaiseContextMenu',
+                     {
+                         ClientX: e.touches[0].clientX,
+                         ClientY: e.touches[0].clientY,
+                         ScreenX: e.touches[0].screenX,
+                         ScreenY: e.touches[0].screenY,
+                         AltKey: e.altKey,
+                         ShiftKey: e.shiftKey,
+                         CtrlKey: e.ctrlKey,
+                         MetaKey: e.metaKey,
+                         Button: 2,
+                         Buttons: 1,
+                     });
+             }, 500);
+         };
+         const endTouch = function (e) {
+             if (taphold) {
+                 e.preventDefault();
+                 e.stopPropagation();
+             } else {
+                 clearTimeout(timer);
+             }
+         };
+         el.addEventListener("touchstart", startTouch);
+         el.addEventListener("touchend", endTouch);
      }
   },
   addMouseEnter: function (id, ref) {
