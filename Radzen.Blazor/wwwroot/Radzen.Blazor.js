@@ -106,7 +106,7 @@ window.Radzen = {
         Radzen[id + 'contextmenu'] = handler;
          el.addEventListener('contextmenu', handler, false);
 
-
+         /*
          // Fix for touch devices
          var timer;
          var taphold;
@@ -145,6 +145,7 @@ window.Radzen = {
          };
          el.addEventListener("touchstart", startTouch);
          el.addEventListener("touchend", endTouch);
+         */
      }
   },
   addMouseEnter: function (id, ref) {
